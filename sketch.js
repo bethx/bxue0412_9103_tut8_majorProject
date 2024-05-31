@@ -3,6 +3,20 @@ let circles = []; // Array for big circles
 let redCircles = []; // Array for small red circles
 let redCircleAmount = 400;
 
+var colourNoise;
+var smallCircleNoise;
+var xoff;
+
+var circleMove;
+var circleMoveIncr;
+
+let smallCircleDiameter;
+
+let circleSize;
+let targetCircleSize;
+const easing = 0.05;
+
+
 // arrays for the X and Y coordinates for the orange lines
 let wavylineX = [2.8, 8.9, 14.9, 0.7, 6.8, 12.7, 19.2, -0.3, 5.8, 11.5, 17.4, 4.3, 10, 16];
 let wavylineY = [2.7, 1, 0, 8.9, 7.7, 6.8, 4.2, 15.2, 13.5, 12.8, 10.5, 19.5, 18.5, 17];
@@ -26,16 +40,15 @@ let circleColors = [
 ];
 
 // function to create the lines in the background, adapted from https://editor.p5js.org/zygugi/sketches/BJHK3O_yM
-function wavyLines(linesX, linesY, lineWeight, lineR, lineG, lineB) {
+function wavyLines(linesX, linesY, lineWeight, lineR, lineG, lineB, radiusFactor) {
   noFill();
   stroke(lineR, lineG, lineB);
   strokeWeight(lineWeight);
 
   beginShape();
-  var xoff = 0;
-  var yoff = 0.0;
+  xoff = 0;
   let noiseY = 0.05;
-  let radius = (windowHeight / 20) * 4.2;
+  let radius = (windowHeight / 20) * radiusFactor;
 
   for (var a = 0; a < TWO_PI; a += 0.1) {
     var offset = map(noise(xoff, noiseY), 0, 1, -15, 5);
@@ -57,8 +70,12 @@ class RedCirclePattern {
   }
 
   display() {
-    fill(230, 101, 18);
-    noStroke();
+    let bgCircleG = 255 * noise(colourNoise+5);
+    let bgCircleB = 5 * noise(colourNoise+5);
+
+    fill(230, bgCircleG, bgCircleB);
+    stroke(255, 100, 100);
+    strokeWeight(1);
     circle(this.xPos, this.yPos, this.radius * 2);
   }
 }
@@ -84,6 +101,7 @@ class CirclePattern {
 
   display() {
     fill(this.colour);
+    noStroke();
     let x = this.xFactor * windowHeight / 20;
     let y = this.yFactor * windowHeight / 20;
     circle(x, y, circleDiameter);
@@ -105,8 +123,6 @@ class CirclePattern {
     fill(this.r3Color);
     circle(x, y, r3 * 2);
 
-    // Additional rings between r3 and r4
-    let r4 = windowHeight / 20 * 0.5;
     let ringRadii = [ // Radius of each circle between first circle 3 and circle 4
       windowHeight / 20 * 1.2,
       windowHeight / 20 * 1.0,
@@ -125,7 +141,7 @@ class CirclePattern {
     let x = this.xFactor * windowHeight / 20;
     let y = this.yFactor * windowHeight / 20;
     let radius = circleDiameter / 2;
-    let smallCircleDiameter = 10; // Smaller diameter
+    let smallCircleDiameter = windowHeight/90; // Smaller diameter
     let maxAttempts = 10000;
     let attempts = 0;
 
@@ -158,7 +174,7 @@ class CirclePattern {
   }
 
   drawRandomSmallCircles() {
-    let smallCircleDiameter = 10; // Smaller size of small circles
+    let smallCircleDiameter = windowHeight/90; // Smaller size of small circles
     noStroke(); // Remove stroke
     for (let smallCircle of this.smallCircles) {
       fill(smallCircle.color);
@@ -178,7 +194,14 @@ class CirclePattern {
 function setup() {
   createCanvas(windowHeight, windowHeight);
   background(5, 89, 127);
+  smallCircleNoise = 0;
+
+  colourNoise = 0;
+
   circleDiameter = (windowHeight / 20) * 5.5;
+
+  circleSize = circleDiameter;
+  targetCircleSize = circleSize + 20;
 
   // Initialize circles with their respective positions and colors
   for (let i = 0; i < wavylineX.length; i++) {
@@ -216,31 +239,63 @@ function setup() {
 }
 
 function draw() {
-  background(5, 89, 127);
+  background(5, 89, 127, 8);
+
+    // Draw all small red circles
+    for (let redCircle of redCircles) {
+      redCircle.display();
+    }
 
   // draw lines
   for (let t = 0; t < wavylineX.length; t++) {
-    wavyLines(wavylineX[t], wavylineY[t], 5, 244, 198, 226);
+    wavyLines(wavylineX[t] * noise(smallCircleNoise), wavylineY[t], 2, 244, 198, 226, 10);
   }
 
   // draw inner lines
   for (let t = 0; t < wavylineX.length; t++) {
-    wavyLines(wavylineX[t], wavylineY[t], 2, 134, 198, 226);
+    wavyLines(wavylineX[t], wavylineY[t] * noise(smallCircleNoise), 1, 134, 198, 226, 4.2);
   }
 
-  // Draw all small red circles
-  for (let redCircle of redCircles) {
-    redCircle.display();
-  }
+  particles();
+
+  circleMoving(10, 20);
 
   // Draw all big circles
-  for (let circle of circles) {
+   for (let circle of circles) {
     circle.display();
+    circleMove += 0.001;
+  } 
+  
+  colourNoise = colourNoise + 0.01;
+  smallCircleNoise = smallCircleNoise + 0.002;
   }
-}
 
 function windowResized() {
   resizeCanvas(windowHeight, windowHeight);
-  circleDiameter = (windowHeight / 20) * 5.5; // Recalculate circleDiameter after resize
+  circleDiameter = (windowHeight / 20) * 5.5; 
+  smallCircleDiameter = windowHeight/90;
+ // Recalculate circle diameter after resize
   draw(); // Redraw circles to reflect the new dimensions
+}
+
+function particles() {
+  for (let x = 0; x < width; x++) {
+    strokeWeight(2);
+    point(x, random(height));
+  }
+}
+
+function circleMoving(smallestCircle, biggestCircle) {
+
+  if (frameCount % 60 == 0) {
+    targetCircleSize = random(circleDiameter - smallestCircle, circleDiameter + biggestCircle);
+  }
+
+  for (let t = 0; t < wavylineX.length; t++) {
+    stroke(circleColors[t]);
+    circle((windowHeight/20)*wavylineX[t], (windowHeight/20)*wavylineY[t], circleSize)
+  }
+
+  circleSize = lerp(circleSize, targetCircleSize, easing);
+
 }
