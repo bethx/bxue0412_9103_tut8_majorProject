@@ -32,7 +32,7 @@ As can be seen in the inspiration artwork, a traditional painting should have a 
 ![Inspo artwork](readMeImages/wheelsOfFortune.jpg) 
 *Our group's inspiration artwork: Pacita Abad's Wheels of Fortune*
 
-For inspiration of the animation movement, I referenced the film *Spider-Man: Across the Spider-Verse* (2023), which is an animated film with a comic book style. Specifically, I took reference from the beginning of the film that shows a world that looks like a watercolour painting. 
+For inspiration of the animation movement, I referenced the film *Spider-Man: Across the Spider-Verse* (2023), which is an animated film with a comic book style.
 
 In the beginning scene, radiating circles are used to match the sound of a character playing the drums. I felt inspired by the way these circles move when animating my own work.
 
@@ -47,8 +47,6 @@ I was also inspired by way the film was animated to look like a moving comic boo
 The scene I referenced can be viewed [here](https://www.youtube.com/watch?v=Ek40XtVsO7g).
 
 ### Technical Explanation
-A short technical explanation of how your individual code works to animate the image and any appropriate references.
-
 1. The background in draw() function has some transparency so that the previous frames can be seen. This technique was sourced from [here](https://genekogan.com/code/p5js-perlin-noise/ ).
 2. Created variables to add noise to the green and blue factors of the background circles so that they flicker. A stroke is also added.
 3. Noise added to the radius of the inner nested rings so that they move in and out. Also added white stroke.
