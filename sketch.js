@@ -4,18 +4,16 @@ let redCircles = []; // Array for small red circles
 let redCircleAmount = 400;
 
 var colourNoise;
+var wavyLineNoise;
+var nestedRingNoise;
 var smallCircleNoise;
 var xoff;
-
-var circleMove;
-var circleMoveIncr;
 
 let smallCircleDiameter;
 
 let circleSize;
 let targetCircleSize;
 const easing = 0.05;
-
 
 // arrays for the X and Y coordinates for the orange lines
 let wavylineX = [2.8, 8.9, 14.9, 0.7, 6.8, 12.7, 19.2, -0.3, 5.8, 11.5, 17.4, 4.3, 10, 16];
@@ -72,7 +70,6 @@ class RedCirclePattern {
   display() {
     let bgCircleG = 255 * noise(colourNoise+5);
     let bgCircleB = 5 * noise(colourNoise+5);
-
     fill(230, bgCircleG, bgCircleB);
     stroke(255, 100, 100);
     strokeWeight(1);
@@ -87,6 +84,7 @@ class CirclePattern {
     this.yFactor = yFactor;
     this.smallCircles = this.generateRandomSmallCircles();
     this.colour = color;
+
     // Generate random colors for nested circles
     this.r2Color = [random(0, 255), random(0, 255), random(0, 255)];
     this.r3Color = [random(0, 255), random(0, 255), random(0, 255)];
@@ -97,6 +95,7 @@ class CirclePattern {
     for (let i = 0; i < 5; i++) {
       this.additionalRingColors.push([random(0, 255), random(0, 255), random(0, 255)]);
     }
+    pop;
   }
 
   display() {
@@ -128,11 +127,11 @@ class CirclePattern {
       windowHeight / 20 * 1.0,
       windowHeight / 20 * 0.8,
       windowHeight / 20 * 0.6,
-      windowHeight / 20 * 0.4
+      windowHeight / 20 * 0.4,
     ];
     for (let i = 0; i < ringRadii.length; i++) {
       fill(this.additionalRingColors[i]); // Achieve different color fills by calling the data in the array
-      circle(x, y, ringRadii[i] * 2);
+      circle(x, y, ringRadii[i] * 3 * noise(nestedRingNoise + i));
     }
   }
 
@@ -178,7 +177,7 @@ class CirclePattern {
     noStroke(); // Remove stroke
     for (let smallCircle of this.smallCircles) {
       fill(smallCircle.color);
-      circle(smallCircle.x, smallCircle.y, smallCircleDiameter);
+      circle(smallCircle.x, smallCircle.y, smallCircleDiameter * noise(smallCircleNoise));
     }
   }
 
@@ -194,9 +193,10 @@ class CirclePattern {
 function setup() {
   createCanvas(windowHeight, windowHeight);
   background(5, 89, 127);
-  smallCircleNoise = 0;
-
+  wavyLineNoise = 0;
   colourNoise = 0;
+  nestedRingNoise = 0;
+  smallCircleNoise = 0;
 
   circleDiameter = (windowHeight / 20) * 5.5;
 
@@ -239,7 +239,8 @@ function setup() {
 }
 
 function draw() {
-  background(5, 89, 127, 8);
+  background(5, 89, 127, 5);
+
 
     // Draw all small red circles
     for (let redCircle of redCircles) {
@@ -248,12 +249,12 @@ function draw() {
 
   // draw lines
   for (let t = 0; t < wavylineX.length; t++) {
-    wavyLines(wavylineX[t] * noise(smallCircleNoise), wavylineY[t], 2, 244, 198, 226, 10);
+    wavyLines(wavylineX[t] * noise(wavyLineNoise), wavylineY[t], 2, 244, 198, 226, 10);
   }
 
   // draw inner lines
   for (let t = 0; t < wavylineX.length; t++) {
-    wavyLines(wavylineX[t], wavylineY[t] * noise(smallCircleNoise), 1, 134, 198, 226, 4.2);
+    wavyLines(wavylineX[t], wavylineY[t] * noise(wavyLineNoise), 1, 134, 198, 226, 4.2);
   }
 
   particles();
@@ -263,11 +264,12 @@ function draw() {
   // Draw all big circles
    for (let circle of circles) {
     circle.display();
-    circleMove += 0.001;
   } 
-  
+
   colourNoise = colourNoise + 0.01;
-  smallCircleNoise = smallCircleNoise + 0.002;
+  wavyLineNoise = wavyLineNoise + 0.002;
+  nestedRingNoise = nestedRingNoise + 0.01;
+  smallCircleNoise = smallCircleNoise + 0.03;
   }
 
 function windowResized() {
@@ -280,6 +282,7 @@ function windowResized() {
 
 function particles() {
   for (let x = 0; x < width; x++) {
+    stroke(255, 50, 150);
     strokeWeight(2);
     point(x, random(height));
   }
@@ -297,5 +300,4 @@ function circleMoving(smallestCircle, biggestCircle) {
   }
 
   circleSize = lerp(circleSize, targetCircleSize, easing);
-
 }
