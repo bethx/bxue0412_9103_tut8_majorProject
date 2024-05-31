@@ -119,6 +119,8 @@ class CirclePattern {
     // second circle
     let r2 = windowHeight / 20 * 1.5;
     fill(this.r2Color);
+    stroke(255, 255,255) // Added white outline to emphasise movement of these circles
+    strokeWeight(1)
     circle(x, y, r2 * 2);
 
     let r3 = windowHeight / 20 * 1.35;

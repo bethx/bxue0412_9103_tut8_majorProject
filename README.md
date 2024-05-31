@@ -51,7 +51,7 @@ A short technical explanation of how your individual code works to animate the i
 
 1. The background in draw() function has some transparency so that the previous frames can be seen. This technique was sourced from [here](https://genekogan.com/code/p5js-perlin-noise/ ).
 2. Created variables to add noise to the green and blue factors of the background circles so that they flicker. A stroke is also added.
-3. Noise added to the radius of the inner nested rings so that they move in and out. 
+3. Noise added to the radius of the inner nested rings so that they move in and out. Also added white stroke.
 4. Noise added to the diameter of the small random circles inside the big circles so that they change size slightly.
 5. Noise added to the X coordinate of the pink wavy lines, and to the Y coordinate of the blue wavy lines, so that they move around the canvas randomly.
 6. A function was created to draw pink particles randomly across the canvas. This code is from Week 10 lecture.
