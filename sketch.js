@@ -62,7 +62,7 @@ function wavyLines(linesX, linesY, lineWeight, lineR, lineG, lineB, radiusFactor
   endShape();
 }
 
-// Class for small random bcakground circles
+// Class for small random background circles
 class bgCirclePattern {
   constructor(xPos, yPos, radius) {
     this.xPos = xPos;
@@ -70,7 +70,7 @@ class bgCirclePattern {
     this.radius = radius;
   }
 
-  // Individual code: added noise to the green and blue to make the 
+  // Individual code: added noise to the green and blue to make the background circles change colour
   display() {
     let bgCircleG = 255 * noise(colourNoise+5);
     let bgCircleB = 5 * noise(colourNoise+5);
@@ -252,7 +252,8 @@ This code was adapted from https://www.youtube.com/watch?v=XATr_jdh-44&t=122s */
 function draw() {
   background(5, 89, 127, 5);
   /* Lowered background opacity so that past frames can be seen, 
-  which enhances the animation's movement */
+  which enhances the animation's movement 
+  This technique was sourced from https://genekogan.com/code/p5js-perlin-noise/*/
 
 
     // Draw all small background circles
